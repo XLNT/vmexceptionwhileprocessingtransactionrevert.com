@@ -1,0 +1,38 @@
+// @import '~foundation-sites/scss/foundation';
+// ^ should work, but doesn't and I don't care enough to fix it
+@import '../../node_modules/foundation-sites/scss/foundation';
+
+@import url('https://fonts.googleapis.com/css?family=Gothic+A1:400,700,900');
+
+@import '_settings';
+
+@include foundation-everything;
+
+a {
+  outline-width: 0;
+}
+
+header, section, footer {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1.0rem solid rgba($millenial-green, 0.9);
+  margin-bottom: 1rem;
+}
+
+footer {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  margin-bottom: 0;
+}
+
+ul.no-style {
+  list-style: none;
+}
+
+blockquote {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-left: 0.5rem solid rgba($millenial-green, 0.9);
+}

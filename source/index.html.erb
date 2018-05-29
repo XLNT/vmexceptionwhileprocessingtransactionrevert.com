@@ -1,0 +1,228 @@
+<header>
+    <div class="grid-container">
+        <div class="grid-y grid-margin-y">
+            <div class="cell">
+                <h1 class="text-center">Error: VM Exception while processing transaction: revert</h1>
+            </div>
+            <div class="cell">
+                <ul class="no-style">
+                    <li>for <code><span class="show-for-large">Error: VM Exception while processing transaction: </span><b>revert</b></code></li>
+                    <li>&nbsp;or <code><span class="show-for-large">Error: VM Exception while processing transaction: </span><b>invalid opcode</b></code></li>
+                    <li>&nbsp;or <code><span class="show-for-large">Error: VM Exception while processing transaction: </span><b>out of gas</b></code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="grid-container">
+    <div class="grid-x grid-margin-x">
+        <blockquote class="cell">
+            I got this error! What do I do????
+        </blockquote>
+        <p>Unfortunately, this error is incredibly generic and unhelpful. You have two options:</p>
+    </div>
+</div>
+
+<section>
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <div class="cell medium-4">
+                <h2>Option 1</h2>
+                <p>Panic</p>
+                <ul class="no-style">
+                    <li>☑ Lie Down</li>
+                    <li>☑ Try Not to Cry</li>
+                    <li>☑ Cry a Lot</li>
+                </ul>
+            </div>
+            <div class="cell medium-8">
+                <h2>Option 2</h2>
+                <p>Don't Panic</p>
+                <ul class="no-style">
+                    <li>☑ This error means your transaction failed.</li>
+                    <li>☑ It's very generic, so don't expect to find a copy-paste solution on google.</li>
+                    <li>☑ Let's debug it!</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="grid-container">
+        <div class="grid-x grid-margin-x">
+            <div class="cell">
+                <h3 id="oog">I get <code>out of gas</code> errors!</h3>
+                <p>You're either not sending enough gas or are hitting the block gas limit. Estimate your gas requirement with <code>estimateGas()</code>. If it's about equal to the block gas limit, it either requires too much gas to fit in a block or is using up all of the gas you provide it because of an error, which we can debug below.</p>
+
+                <p>Does your contract just need too much gas to deploy? Try splitting your deployment into multiple transactions.</p>
+
+                <p>If you're using <b>solc</b> directly, use the <code>--optimize --runs=1</code> parameters <a href="http://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html">via the docs</a>.</p>
+
+                <p>If you're using <b>truffle</b>, configure the optmizier in <code>truffle.js</code> with <code>solc: { optimizer: { enabled: true, runs: 200 } }</code></p>
+
+                <p>
+                    Are you using a helper library like web3.js or a library like truffle that uses web3.js? Each individual call may have a self-imposed gas limit on it; make sure your <code>truffle.js</code> config sets a gas limit vaguely equal to the chain you're deploying to.
+                </p>
+                <p>
+                    Using a library like web3.js directly? It may not be estimating gas for you at all. Try the brute force approach below to see if that's the issue.
+                </p>
+
+                <p>
+                    If you're running on a test net, you can employ the "brute force" approach of "just send as much gas as possible" and see if that was your issue. Try <code>myContract.myMethod(..., { gas: 8000000 })</code> and see if it works. If it does, your gas estimation or gas limit is definitely wrong somewhere. If that didn't fix your problem, you're either going above the block gas limit or running into one of the problems below.
+                </p>
+
+                <p>
+                    Are you using hella <b>strings</b>? Honestly you might just be using too much gas; strings can be silenty very expensive.
+                </p>
+
+                <h3 id="deploy">This occurs when I deploy!</h3>
+                <blockquote class="cell">
+                    "revert" or "invalid opcode"
+                </blockquote>
+                <p>You're probably failing a <code>require()</code> block in the code path executed by your constructor. Make sure all of your input arguments are absolutely correct!</p>
+
+                <p>Deploying a crowdsale? Make sure your opening and closing times pass the required checks. Your start time needs to be at least a few blocks ahead of when you deploy, otherwise you'll fail the <code>require(openingTime > block.timestamp)</code> condition because the time your contract is actually deployed is pretty random.</p>
+
+                <p>You could also be running into authorization issues, discussed below.</p>
+
+                <h3 id="#tx">This occurs when I try to send a transaction!</h3>
+                <blockquote>
+                    "revert"
+                </blockquote>
+
+                <p>
+                    The <b>bad news</b> is that literally anything could have gone wrong here. All it means is that a <code>REVERT</code> opcode was issued somewhere along the way. No, you don't get a stack trace. Using truffle or web3.js? No, you don't get to know which transaction caused the issue, since those are handled asynchronously and the stack traces have 0 context and are completely useless. Oh, you're using truffle? You get a <i>special, minified, entirely garbage</i> stack trace that is of no use to anyone in the conceivable universe.
+                </p>
+
+                <p>
+                    The <b>good news</b> is that it was probably a <code>require()</code> block somewhere, so you can start tracking that down.
+                </p>
+
+                <p>
+                    If you're running a suite of transactions and don't know which transaction caused the error, either step-though each rpc call as it happens or do the 'ole <code>printf</code> debugging approach where you put <code>console.log('1.')</code> in between each rpc call, allowing you to see which one fails.
+                </p>
+
+                <p>
+                    Now that you've narrowed down which call is the problem, mentally evaluate the code, given the inputs you're sending to the contract. Go over things like:
+
+                    <ul>
+                        <li><b>input validation</b> — is what I'm sending what the contract expects?</li>
+                        <li><b>access control</b> — am I signing this transaction from the correct account? do I have the permissions to do this at all?</li>
+                        <li><b>math</b> — does all of the math work out?</li>
+                        <li><b>access control</b> — seriously, make sure your contract has the correct token allowance</li>
+                    </ul>
+                </p>
+
+                <p>
+                    You can check to see how much gas was consumed to estimate where in the code path your transaction failed. Only used ~21,000 gas? You probably hit a modifier like <code>onlyOwner</code> that stopped your transaction in its tracks.
+                </p>
+
+                <p>
+                    Are you working with ether or tokens? You may have mixed up your units somewhere. Unless there's a specific reason, <b>all storage and math relating to currencies should be done in the smallest amount of that currency</b>. This means your contract should only accept wei in its arguments. If you're doing token math, you might have mixed up <code>1 TKNbit</code> with <code>1 TKN</code>. A <code>TKNbit</code> is the smallest unit of your token; if your decimals are 18, <code>1 TKN = 10^18 TKNbits</code>.
+                </p>
+
+                <h3>I'm working on a crowdsale!</h3>
+                <p>Well first, if you can't solve this one yourself you <i>probably</i> shouldn't be working on a crowdsale. don't @ me</p>
+                <p>
+                    That said, let's debug it! Is the <code>buyTokens()</code> function failing? Your problem is probably one of these:
+                    <ul>
+                        <li>you didn't send any money to the crowdsale</li>
+                        <li>you're purchasing for a null address</li>
+                        <li>your token address is null</li>
+                        <li>Crowdsale.sol: your crowdsale doesn't own any tokens</li>
+                        <li>MintableCrowdsale.sol: your crowdsale can't mint token because minting is finished or your token doesn't conform to <code>MintableToken</code> or it does not pass <code>hasMintingPermission</code></li>
+                        <li>AllowanceCrowdsale.sol: your crowdsale doesn't have an allowance to the token</li>
+                        <li>FinalizableCrowdsale.sol: your crowdsale is finalized already</li>
+                        <li>RefundableCrowdsale.sol: your wallet is not a <code>RefundVault</code></li>
+                        <li>your destination wallet has a fallback function that rejects transfers</li>
+                    </ul>
+                </p>
+
+                <blockquote>
+                    "invalid opcode"
+                </blockquote>
+                <p>
+                    You're not any better off with this error, so consider taking Option 1 above. This error means that an invlid opcode was produced in your contract, and the EVM has no idea what to do with it. So it bails, and it bails hard.
+                </p>
+                <p>
+                    This error could be from an <code>assert()</code> failure within your code path; check those first.
+                </p>
+
+                <h3 id="arrays">I'm working with arrays!</h3>
+                <blockquote>
+                    "invalid opcode"
+                </blockquote>
+                <p>
+                    Make sure you're not accessing an array out-of-bounds! If you're using dynamically sized arrays, a common mistake is to <code>myArray[newIndex] = value</code> before you've manually allocated that space by doing <code>myArray.length++</code>. Using <code>myArray.push(value)</code> does this behind the scenes.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <div class="cell">
+                <h3>None of that solved my problem!</h3>
+                <p>
+                    Well, the only thing someone else is going to do is look over your code and do the exact same thing we went through above, but a second pair of eyes is always helpful.
+                </p>
+                <p>
+                    If you're going to ask for help in a forum, you <b>must</b> include your entire source code, including the script by which you call your contracts. Don't cherry-pick things you think are the problem; just post the code!
+                </p>
+                <p>
+                    And for the love of all that is holy, don't just say "please help???" and never respond to questions from community members asking for clarification.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <div class="cell">
+                <h3>Will this disaster of a development experience get any better?</h3>
+                <p>
+                    Yup! In <a href-"https://github.com/ethereum/solidity/releases/tag/v0.4.22">solidity 0.4.22</a>, the ability to specify an error message was added. It looks like <code>require(something, "something didn't happen!")</code>.
+                </p>
+                <p>
+                    For now, this extra return information isn't really supported by tooling like web3.js and friends. So, uh, just sit tight there, or maybe open a PR?
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <div class="cell">
+                <h3>Want to know more about how Ethereum actually works?</h3>
+                <ol>
+                    <li>First, <a href="https://medium.com/@mattcondon/getting-up-to-speed-on-ethereum-63ed28821bbe">Getting up to Speed on Ethereum</a></li>
+                    <li>then <a href="https://github.com/ethereum/wiki/wiki/White-Paper">read the whitepaper.</a></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<footer>
+    <div class="grid-container">
+        <div class="grid-x grid-padding-x">
+            <div class="cell">
+                <p>
+                    This website brought to you by the fine folk at <a href="https://xlnt.co">XLNT</a>.
+                </p>
+                <p>
+                    We're working on the future of digital ownership. If that sort of stuff is interesting to you, join us in the <a href="https://XLNT.chat">XLNT.chat</a>.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>

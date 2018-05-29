@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8" />
+
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>
+    <%= current_page.data.title || 'Error: VM Exception while processing transaction: revert' %>
+  </title>
+  <meta name="description" content="<%= current_page.data.description || 'Because who needs real error messages?' %>" />
+
+  <meta property="og:title" content="<%= current_page.data.title || 'Error: VM Exception while processing transaction: revert' %>" />
+  <meta property="og:site_name" content="Error: VM Exception while processing transaction: revert" />
+  <meta property="og:url" content="https://vmexceptionwhileprocessingtransactionrevert.com" />
+  <meta property="og:description" content="<%= current_page.data.description || 'Because who needs real error messages?' %>" />
+  <meta property="og:image" content="https://vmexceptionwhileprocessingtransactionrevert.com/images/meta.jpg" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180-precomposed.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152-precomposed.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144-precomposed.png">
+  <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114-precomposed.png">
+  <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72-precomposed.png">
+  <link rel="shortcut icon" href="favicon.png">
+  <link rel="icon" type="image/ico" href="favicon.ico">
+
+  <link href="https://fonts.googleapis.com/css?family=Cabin:700" rel="stylesheet">
+
+  <%= stylesheet_link_tag 'main' %>
+  <% (current_page.data.css || []).each do |css| %>
+    <%= stylesheet_link_tag css %>
+  <% end %>
+
+  <% if build? and environment?(:production) %>
+    <%= partial 'partials/google_analytics' %>
+  <% end %>
+</head>
+
+<body class="<%= page_classes %>">
+
+  <%= yield %>
+
+  <%= javascript_include_tag 'main', defer: true %>
+
+  <% (current_page.data.js || []).each do |js| %>
+    <%= javascript_include_tag js, defer: true %>
+  <% end %>
+
+
+</body>
+</html>
