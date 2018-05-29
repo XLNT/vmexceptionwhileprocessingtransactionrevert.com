@@ -4,13 +4,13 @@ Dotenv.overload(".env.#{config.environment.to_s}")
 # Activate and configure extensions
 # https://middlemanapp.com/advanced/configuration/#configuring-extensions
 
-activate :external_pipeline,
-  name: :webpack,
-  command: build? ?
-  'webpack --bail -p' :
-  'webpack --watch -d --progress --color',
-  source: '.tmp/dist',
-  latency: 1
+# activate :external_pipeline,
+#   name: :webpack,
+#   command: build? ?
+#   'webpack --bail -p' :
+#   'webpack --watch -d --progress --color',
+#   source: '.tmp/dist',
+#   latency: 1
 
 activate :autoprefixer do |prefix|
   prefix.browsers = "last 2 versions"

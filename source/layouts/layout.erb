@@ -26,8 +26,6 @@
   <link rel="shortcut icon" href="favicon.png">
   <link rel="icon" type="image/ico" href="favicon.ico">
 
-  <link href="https://fonts.googleapis.com/css?family=Cabin:700" rel="stylesheet">
-
   <%= stylesheet_link_tag 'main' %>
   <% (current_page.data.css || []).each do |css| %>
     <%= stylesheet_link_tag css %>
@@ -41,8 +39,6 @@
 <body class="<%= page_classes %>">
 
   <%= yield %>
-
-  <%= javascript_include_tag 'main', defer: true %>
 
   <% (current_page.data.js || []).each do |js| %>
     <%= javascript_include_tag js, defer: true %>
