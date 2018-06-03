@@ -20,7 +20,9 @@
         <blockquote class="cell">
             I got this error! What do I do????
         </blockquote>
-        <p>Unfortunately, this error is incredibly generic and unhelpful. You have two options:</p>
+        <div class="cell">
+            <p>Unfortunately, this error is incredibly generic and unhelpful. You have two options:</p>
+        </div>
     </div>
 </div>
 
@@ -120,6 +122,10 @@
                 </p>
 
                 <p>
+                    You can also just start commenting-out code that might be the problem and see when the execution actually succeeds! Binary search is your friend here 😉.
+                </p>
+
+                <p>
                     Are you working with ether or tokens? You may have mixed up your units somewhere. Unless there's a specific reason, <b>all storage and math relating to currencies should be done in the smallest amount of that currency</b>. This means your contract should only accept wei in its arguments. If you're doing token math, you might have mixed up <code>1 TKNbit</code> with <code>1 TKN</code>. A <code>TKNbit</code> is the smallest unit of your token; if your decimals are 18, <code>1 TKN = 10^18 TKNbits</code>.
                 </p>
 
@@ -144,16 +150,13 @@
                     "invalid opcode"
                 </blockquote>
                 <p>
-                    You're not any better off with this error, so consider taking Option 1 above. This error means that an invlid opcode was produced in your contract, and the EVM has no idea what to do with it. So it bails, and it bails hard.
+                    You're not any better off with this error, so consider taking "Option 1: Panic" above. This error means that an invlid opcode was produced in your contract, and the EVM has no idea what to do with it. So it bails, and it bails hard.
                 </p>
                 <p>
                     This error could be from an <code>assert()</code> failure within your code path; check those first.
                 </p>
 
                 <h3 id="arrays">I'm working with arrays!</h3>
-                <blockquote>
-                    "invalid opcode"
-                </blockquote>
                 <p>
                     Make sure you're not accessing an array out-of-bounds! If you're using dynamically sized arrays, a common mistake is to <code>myArray[newIndex] = value</code> before you've manually allocated that space by doing <code>myArray.length++</code>. Using <code>myArray.push(value)</code> does this behind the scenes.
                 </p>
@@ -190,7 +193,10 @@
                     Yup! In <a href-"https://github.com/ethereum/solidity/releases/tag/v0.4.22">solidity 0.4.22</a>, the ability to specify an error message was added. It looks like <code>require(something, "something didn't happen!")</code>.
                 </p>
                 <p>
-                    For now, this extra return information isn't really supported by tooling like web3.js and friends. So, uh, just sit tight there, or maybe open a PR?
+                    For now, this extra return information isn't really supported by tooling like web3.js and friends. So, uh, just sit tight there, yeah? Or maybe open a PR against your favorite libraries!
+                </p>
+                <p>
+                    Also, follow the <a href="https://eips.ethereum.org/EIPS/eip-1066">EIP 1066: Status Codes</a> as it develops.
                 </p>
             </div>
         </div>
