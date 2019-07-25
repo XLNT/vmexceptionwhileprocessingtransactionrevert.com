@@ -70,7 +70,7 @@
 
                 <p>If you're using <b>solc</b> directly, use the <code>--optimize --runs=1</code> parameters <a href="http://solidity.readthedocs.io/en/v0.4.24/using-the-compiler.html">via the docs</a>.</p>
 
-                <p>If you're using <b>truffle</b>, configure the optmizier in <code>truffle.js</code> with <code>solc: { optimizer: { enabled: true, runs: 200 } }</code></p>
+                <p>If you're using <b>truffle</b>, configure the optimizer in <code>truffle.js</code> with <code>solc: { optimizer: { enabled: true, runs: 200 } }</code></p>
 
                 <p>
                     Are you using a helper library like web3.js or a library like truffle that uses web3.js? Each individual call may have a self-imposed gas limit on it; make sure your <code>truffle.js</code> config sets a gas limit vaguely equal to the chain you're deploying to.
